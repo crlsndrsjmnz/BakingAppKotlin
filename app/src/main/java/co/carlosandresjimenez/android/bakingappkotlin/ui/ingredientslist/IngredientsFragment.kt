@@ -36,6 +36,8 @@ class IngredientsFragment : DialogFragment() {
 
     var ingredients: TextView? = null
 
+    private var twoPane: Boolean = false
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         if (showsDialog) {
@@ -43,7 +45,11 @@ class IngredientsFragment : DialogFragment() {
         }
 
         val view = inflater.inflate(R.layout.fragment_ingredients, container, false)
-        setHasOptionsMenu(true)
+
+        twoPane = resources.getBoolean(R.bool.show_master_detail_flow)
+        if (!twoPane) {
+            setHasOptionsMenu(true)
+        }
 
         ingredients = view.findViewById(R.id.ingredients)
         ingredients?.text = getIngredients()
@@ -66,13 +72,14 @@ class IngredientsFragment : DialogFragment() {
     }
 
     fun getIngredients(): String {
-        var ingredientsStr = ""
+        var formattedIngredients = ""
         val ingredients: List<BakingIngredient> = arguments!!.getParcelableArrayList(INGREDIENT_PARAMS)
+
         for (ingredient in ingredients) {
-            ingredientsStr += "${ingredient.quantity} ${ingredient.measure} of ${ingredient.ingredient} \n"
+            formattedIngredients += "${ingredient.quantity} ${ingredient.measure} of ${ingredient.ingredient} \n"
         }
 
-        return ingredientsStr
+        return formattedIngredients
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

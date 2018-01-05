@@ -57,11 +57,16 @@ class StepDetailFragment : Fragment() {
     private var shouldAutoPlay: Boolean = false
     private var currentPosition: Long = 0
     private var showImmersive: Boolean = false
+    private var twoPane: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.fragment_step_detail, container, false)
-        setHasOptionsMenu(true)
+
+        twoPane = resources.getBoolean(R.bool.show_master_detail_flow)
+        if (!twoPane) {
+            setHasOptionsMenu(true)
+        }
 
         bakingStep = arguments!!.getParcelable(STEP_DETAIL_PARAMS)
 
