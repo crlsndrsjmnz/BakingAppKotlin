@@ -1,0 +1,13 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="app_bar_height">200dp</dimen>
+    <dimen name="item_width">200dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
+
+    <dimen name="padding_x1">2dp</dimen>
+    <dimen name="padding_x2">4dp</dimen>
+    <dimen name="padding_x3">6dp</dimen>
+    <dimen name="padding_x4">8dp</dimen>
+    <dimen name="padding_x6">12dp</dimen>
+    <dimen name="padding_x8">16dp</dimen>
+</resources>
