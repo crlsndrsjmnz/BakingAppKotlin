@@ -1,6 +1,7 @@
 package co.carlosandresjimenez.android.bakingappkotlin.ui.recipedetail
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -9,14 +10,16 @@ import android.widget.LinearLayout
 import co.carlosandresjimenez.android.bakingappkotlin.R
 import co.carlosandresjimenez.android.bakingappkotlin.data.model.BakingRecipe
 import co.carlosandresjimenez.android.bakingappkotlin.ui.ingredientslist.IngredientsFragment
+import co.carlosandresjimenez.android.bakingappkotlin.ui.recipelist.MainActivity
 import co.carlosandresjimenez.android.bakingappkotlin.ui.stepdetail.StepDetailFragment
 import kotlinx.android.synthetic.main.activity_detail.*
 
 class DetailActivity : AppCompatActivity(), RecipeDetailsAdapter.OnItemClickListener {
 
     companion object {
+        val RECYCLERVIEW_STATE: String = "RECYCLERVIEW_STATE"
+
         const val RECIPE_EXTRA: String = "bakingappkotlin.ui.recipedetail.RECIPE_EXTRA"
-        const val STEP_EXTRA: String = "bakingappkotlin.ui.recipedetail.STEP_EXTRA"
 
         const val DETAIL_FRAGMENT: String = "bakingappkotlin.ui.recipedetail.DETAIL_FRAGMENT"
     }
@@ -43,8 +46,20 @@ class DetailActivity : AppCompatActivity(), RecipeDetailsAdapter.OnItemClickList
         recyclerView?.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
         recyclerView?.adapter = RecipeDetailsAdapter(this, bakingRecipe.steps)
 
+        if (savedInstanceState != null) {
+            val recyclerState: Parcelable = savedInstanceState.getParcelable(MainActivity.RECYCLERVIEW_STATE)
+            recyclerView?.layoutManager?.onRestoreInstanceState(recyclerState)
+        }
+
         twoPane = resources.getBoolean(R.bool.show_master_detail_flow)
 
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        val recyclerState = recyclerView?.layoutManager?.onSaveInstanceState()
+        outState?.putParcelable(RECYCLERVIEW_STATE, recyclerState)
+
+        super.onSaveInstanceState(outState)
     }
 
     override fun onItemClick(holder: RecyclerView.ViewHolder) {

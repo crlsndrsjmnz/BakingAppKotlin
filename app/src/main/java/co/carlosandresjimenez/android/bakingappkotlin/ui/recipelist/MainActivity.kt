@@ -2,7 +2,9 @@ package co.carlosandresjimenez.android.bakingappkotlin.ui.recipelist
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
 import android.support.design.widget.Snackbar
+import android.support.test.espresso.idling.CountingIdlingResource
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -24,6 +26,7 @@ class MainActivity : AppCompatActivity(), ApiCallback, RecipeListAdapter.OnItemC
 
     companion object {
         val RECIPE_LIST: String = "RECIPE_LIST"
+        val RECYCLERVIEW_STATE: String = "RECYCLERVIEW_STATE"
     }
 
     private var recyclerView: RecyclerView? = null
@@ -31,6 +34,8 @@ class MainActivity : AppCompatActivity(), ApiCallback, RecipeListAdapter.OnItemC
 
     private val request = ConnectionManager()
     private val adapter = RecipeListAdapter(this)
+
+    var countingIdlingResource = CountingIdlingResource("Network_Call")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,15 +50,22 @@ class MainActivity : AppCompatActivity(), ApiCallback, RecipeListAdapter.OnItemC
 
         if (savedInstanceState == null) {
             progressBar?.visibility = View.VISIBLE
+            countingIdlingResource.increment()
             request.getRecipes(this)
         } else {
             adapter.recipes = savedInstanceState.getParcelableArrayList(RECIPE_LIST)
             adapter.notifyDataSetChanged()
+
+            val recyclerState: Parcelable = savedInstanceState.getParcelable(RECYCLERVIEW_STATE)
+            recyclerView?.layoutManager?.onRestoreInstanceState(recyclerState)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         outState?.putParcelableArrayList(RECIPE_LIST, ArrayList(adapter.recipes))
+
+        val recyclerState = recyclerView?.layoutManager?.onSaveInstanceState()
+        outState?.putParcelable(RECYCLERVIEW_STATE, recyclerState)
 
         super.onSaveInstanceState(outState)
     }
@@ -79,6 +91,7 @@ class MainActivity : AppCompatActivity(), ApiCallback, RecipeListAdapter.OnItemC
         if (recipes != null) {
             adapter.recipes = recipes
             adapter.notifyDataSetChanged()
+            countingIdlingResource.decrement()
         }
     }
 
@@ -96,5 +109,9 @@ class MainActivity : AppCompatActivity(), ApiCallback, RecipeListAdapter.OnItemC
         val intent = Intent(this, DetailActivity::class.java )
         intent.putExtra(DetailActivity.RECIPE_EXTRA, holder.recipe)
         startActivity(intent)
+    }
+
+    fun getEspressoIdlingResource(): CountingIdlingResource {
+        return countingIdlingResource
     }
 }

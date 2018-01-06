@@ -3,6 +3,7 @@ package co.carlosandresjimenez.android.bakingappkotlin.ui.ingredientslist.widget
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -27,6 +28,7 @@ class IngredientsConfigurationActivity : AppCompatActivity(), ApiCallback, Recip
 
     companion object {
         val RECIPE_LIST: String = "RECIPE_LIST"
+        val RECYCLERVIEW_STATE: String = "RECYCLERVIEW_STATE"
     }
 
     private var appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
@@ -68,11 +70,17 @@ class IngredientsConfigurationActivity : AppCompatActivity(), ApiCallback, Recip
         } else {
             adapter.recipes = savedInstanceState.getParcelableArrayList(MainActivity.RECIPE_LIST)
             adapter.notifyDataSetChanged()
+
+            val recyclerState: Parcelable = savedInstanceState.getParcelable(RECYCLERVIEW_STATE)
+            recyclerView?.layoutManager?.onRestoreInstanceState(recyclerState)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         outState?.putParcelableArrayList(RECIPE_LIST, ArrayList(adapter.recipes))
+
+        val recyclerState = recyclerView?.layoutManager?.onSaveInstanceState()
+        outState?.putParcelable(RECYCLERVIEW_STATE, recyclerState)
 
         super.onSaveInstanceState(outState)
     }
