@@ -9,6 +9,12 @@
 
     <string name="ingredients_title">Ingredients</string>
 
-    <string name="alert_dialog_ok">Ok</string>
+    <string name="widget_ingredients_title">Ingredients</string>
+
+    <string name="recipe_preference_key">bakingappkotlin.ui.ingredientslist.widget.recipe_preference_key</string>
+
+    <string name="alert_dialog_send">Send to widget</string>
     <string name="alert_dialog_cancel">Cancel</string>
+    <string name="network_error">Cannot obtain the recipe list</string>
+    <string name="action_retry">Retry</string>
 </resources>

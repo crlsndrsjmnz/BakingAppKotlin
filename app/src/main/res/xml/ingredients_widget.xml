@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:initialKeyguardLayout="@layout/widget_ingredients"
+    android:configure="co.carlosandresjimenez.android.bakingappkotlin.ui.ingredientslist.widget.IngredientsConfigurationActivity"
+    android:initialLayout="@layout/widget_ingredients"
+    android:minHeight="@dimen/widget_ingredients_default_height"
+    android:minResizeHeight="@dimen/widget_ingredients_min_resize_height"
+    android:minResizeWidth="@dimen/widget_ingredients_min_resize_width"
+    android:minWidth="@dimen/widget_ingredients_default_width"
+    android:previewImage="@drawable/ic_forest_fruit_cake"
+    android:resizeMode="horizontal|vertical"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen|keyguard"
+    tools:ignore="UnusedAttribute" />

@@ -13,10 +13,12 @@ import co.carlosandresjimenez.android.bakingappkotlin.data.model.BakingStep
  * Created by carlosjimenez on 1/1/18.
  */
 
-class RecipeDetailsAdapter(val listener: OnItemClickListener, var steps: List<BakingStep> = emptyList()) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class RecipeDetailsAdapter(private val listener: OnItemClickListener, private var steps: List<BakingStep> = emptyList()) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val VIEW_TYPE_INGREDIENTS = 0
-    private val VIEW_TYPE_STEPS = 1
+    companion object {
+        private val VIEW_TYPE_INGREDIENTS = 0
+        private val VIEW_TYPE_STEPS = 1
+    }
 
     interface OnItemClickListener {
         fun onItemClick(holder: RecyclerView.ViewHolder)
@@ -58,7 +60,7 @@ class RecipeDetailsAdapter(val listener: OnItemClickListener, var steps: List<Ba
 
     class ViewHolderIngredients(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        val llListItem = itemView.findViewById<LinearLayout>(R.id.list_item)
+        private val llListItem = itemView.findViewById<LinearLayout>(R.id.list_item)
 
         fun bindItems(listener: OnItemClickListener) {
             llListItem.setOnClickListener { listener.onItemClick(this) }
@@ -70,8 +72,8 @@ class RecipeDetailsAdapter(val listener: OnItemClickListener, var steps: List<Ba
 
         lateinit var step: BakingStep
 
-        val tvStepDescription = itemView.findViewById<TextView>(R.id.step_description)
-        val llListItem = itemView.findViewById<LinearLayout>(R.id.list_item)
+        private val tvStepDescription = itemView.findViewById<TextView>(R.id.step_description)
+        private val llListItem = itemView.findViewById<LinearLayout>(R.id.list_item)
 
         fun bindItems(listener: OnItemClickListener, step: BakingStep) {
             this.step = step

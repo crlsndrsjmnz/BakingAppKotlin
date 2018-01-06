@@ -18,23 +18,15 @@ class ConnectionManager {
 
     init {
 
-//        val client = OkHttpClient().newBuilder()
-//                .addInterceptor(HttpLoggingInterceptor().apply {
-//                    level = HttpLoggingInterceptor.Level.BODY
-//                })
-//                .build()
-
-
         val retrofit = Retrofit.Builder()
                 .baseUrl("https://d17h27t6h515a5.cloudfront.net/")
-//                .client(client)
                 .addConverterFactory(MoshiConverterFactory.create())
                 .build()
 
         bakingApi = retrofit.create(BakingApi::class.java)
     }
 
-    fun createApiBuilder(): Call<List<BakingRecipe>> {
+    private fun createApiBuilder(): Call<List<BakingRecipe>> {
         return bakingApi.getRecipes()
     }
 

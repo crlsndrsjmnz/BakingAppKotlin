@@ -1,6 +1,7 @@
 package co.carlosandresjimenez.android.bakingappkotlin.ui.ingredientslist
 
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
@@ -9,9 +10,10 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import co.carlosandresjimenez.android.bakingappkotlin.R
-import co.carlosandresjimenez.android.bakingappkotlin.data.model.BakingIngredient
+import co.carlosandresjimenez.android.bakingappkotlin.data.model.BakingRecipe
+import co.carlosandresjimenez.android.bakingappkotlin.ui.ingredientslist.widget.IngredientWidgetProvider
+import co.carlosandresjimenez.android.bakingappkotlin.util.Utility
 
 
 /**
@@ -23,23 +25,32 @@ class IngredientsFragment : DialogFragment() {
     val LOG_TAG = IngredientsFragment::class.simpleName
 
     companion object {
-        private val INGREDIENT_PARAMS = "INGREDIENT_PARAMS"
+        private val RECIPE_PARAMS = "RECIPE_PARAMS"
 
-        fun newInstance(ingredients: List<BakingIngredient>): IngredientsFragment {
+        fun newInstance(recipe: BakingRecipe): IngredientsFragment {
             val args = Bundle()
-            args.putParcelableArrayList(INGREDIENT_PARAMS, ArrayList(ingredients))
+            args.putParcelable(RECIPE_PARAMS, recipe)
             val fragment = IngredientsFragment()
             fragment.arguments = args
             return fragment
         }
     }
 
-    var ingredients: TextView? = null
+    private var ingredients: TextView? = null
+
+    private var recipe: BakingRecipe? = null
 
     private var twoPane: Boolean = false
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        recipe = arguments?.getParcelable(RECIPE_PARAMS)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+
         if (showsDialog) {
             return null
         }
@@ -58,24 +69,26 @@ class IngredientsFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+
         return AlertDialog.Builder(context!!)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setTitle(getString(R.string.ingredients_title))
                 .setMessage(getIngredients())
-                .setPositiveButton(R.string.alert_dialog_ok,
-                        { dialog, whichButton -> Toast.makeText(context, "Ok", Toast.LENGTH_SHORT).show() }
-                )
-                .setNegativeButton(R.string.alert_dialog_cancel,
-                        { dialog, whichButton -> Toast.makeText(context, "Cancel", Toast.LENGTH_SHORT).show() }
-                )
+                .setPositiveButton(R.string.alert_dialog_send, { _, _ ->
+                    Utility.saveRecipePreference(context!!, recipe)
+                    val dataUpdatedIntent = Intent(IngredientWidgetProvider.ACTION_DATA_UPDATED)
+                            .setPackage(context!!.packageName)
+                            .putExtra(IngredientWidgetProvider.EXTRA_DATA_RECIPE, recipe)
+                    context?.sendBroadcast(dataUpdatedIntent)
+                })
+                .setNegativeButton(R.string.alert_dialog_cancel, { _, _ -> dismiss() })
                 .create()
     }
 
-    fun getIngredients(): String {
+    private fun getIngredients(): String {
         var formattedIngredients = ""
-        val ingredients: List<BakingIngredient> = arguments!!.getParcelableArrayList(INGREDIENT_PARAMS)
 
-        for (ingredient in ingredients) {
+        for (ingredient in recipe?.ingredients ?: emptyList()) {
             formattedIngredients += "${ingredient.quantity} ${ingredient.measure} of ${ingredient.ingredient} \n"
         }
 
@@ -94,6 +107,5 @@ class IngredientsFragment : DialogFragment() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
 
 }

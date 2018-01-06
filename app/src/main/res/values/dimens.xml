@@ -10,4 +10,11 @@
     <dimen name="padding_x4">8dp</dimen>
     <dimen name="padding_x6">12dp</dimen>
     <dimen name="padding_x8">16dp</dimen>
+
+    <!-- Widget -->
+    <dimen name="widget_ingredients_default_width">250dp</dimen>
+    <dimen name="widget_ingredients_default_height">100dp</dimen>
+    <dimen name="widget_ingredients_min_resize_width">50dp</dimen>
+    <dimen name="widget_ingredients_min_resize_height">@dimen/widget_ingredients_default_height</dimen>
+
 </resources>

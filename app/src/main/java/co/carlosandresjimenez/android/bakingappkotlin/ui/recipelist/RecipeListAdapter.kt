@@ -13,14 +13,14 @@ import co.carlosandresjimenez.android.bakingappkotlin.data.model.BakingRecipe
  * Created by carlosjimenez on 1/1/18.
  */
 
-class RecipeListAdapter(val listener: OnItemClickListener, var recipes: List<BakingRecipe> = emptyList()) : RecyclerView.Adapter<RecipeListAdapter.ViewHolder>() {
+class RecipeListAdapter(private val listener: OnItemClickListener, var recipes: List<BakingRecipe> = emptyList()) : RecyclerView.Adapter<RecipeListAdapter.ViewHolder>() {
 
     interface OnItemClickListener {
         fun onItemClick(holder: ViewHolder)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.recipe_item_layout, parent, false)
+        val v: View = LayoutInflater.from(parent.context).inflate(R.layout.recipe_item_layout, parent, false)
         return ViewHolder(v)
     }
 
@@ -36,8 +36,8 @@ class RecipeListAdapter(val listener: OnItemClickListener, var recipes: List<Bak
 
         lateinit var recipe: BakingRecipe
 
-        val tvRecipeName = itemView.findViewById<TextView>(R.id.recipe_name)
-        val llListItem = itemView.findViewById<LinearLayout>(R.id.list_item)
+        private val tvRecipeName = itemView.findViewById<TextView>(R.id.recipe_name)
+        private val llListItem = itemView.findViewById<LinearLayout>(R.id.list_item)
 
         fun bindItems(listener: OnItemClickListener, recipe: BakingRecipe) {
             this.recipe = recipe

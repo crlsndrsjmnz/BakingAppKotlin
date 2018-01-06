@@ -32,6 +32,32 @@
                 android:value="co.carlosandresjimenez.android.bakingappkotlin.ui.recipelist.MainActivity" />
         </activity>
 
+        <!-- Detail Widget -->
+
+        <activity android:name=".ui.ingredientslist.widget.IngredientsConfigurationActivity">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name=".ui.ingredientslist.widget.IngredientWidgetProvider"
+            android:label="@string/widget_ingredients_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="bakingappkotlin.ui.ingredientslist.widget.ACTION_DATA_UPDATED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/ingredients_widget" />
+        </receiver>
+
+        <service
+            android:name=".ui.ingredientslist.widget.IngredientsWidgetRemoteViewsService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
     </application>
 
 </manifest>

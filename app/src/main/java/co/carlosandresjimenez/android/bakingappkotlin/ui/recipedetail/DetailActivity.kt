@@ -50,7 +50,7 @@ class DetailActivity : AppCompatActivity(), RecipeDetailsAdapter.OnItemClickList
     override fun onItemClick(holder: RecyclerView.ViewHolder) {
         when (holder) {
             is RecipeDetailsAdapter.ViewHolderIngredients -> {
-                var ingredientsFragment = IngredientsFragment.newInstance(bakingRecipe.ingredients)
+                var ingredientsFragment = IngredientsFragment.newInstance(bakingRecipe)
 
                 if (twoPane) {
                     supportFragmentManager.beginTransaction()

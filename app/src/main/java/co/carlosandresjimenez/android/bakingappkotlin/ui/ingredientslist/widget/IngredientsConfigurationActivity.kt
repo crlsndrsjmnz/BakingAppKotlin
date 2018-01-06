@@ -1,13 +1,12 @@
-package co.carlosandresjimenez.android.bakingappkotlin.ui.recipelist
+package co.carlosandresjimenez.android.bakingappkotlin.ui.ingredientslist.widget
 
+import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -15,16 +14,22 @@ import co.carlosandresjimenez.android.bakingappkotlin.R
 import co.carlosandresjimenez.android.bakingappkotlin.data.model.BakingRecipe
 import co.carlosandresjimenez.android.bakingappkotlin.data.remote.ApiCallback
 import co.carlosandresjimenez.android.bakingappkotlin.data.remote.ConnectionManager
-import co.carlosandresjimenez.android.bakingappkotlin.ui.recipedetail.DetailActivity
-import kotlinx.android.synthetic.main.activity_main.*
+import co.carlosandresjimenez.android.bakingappkotlin.ui.recipelist.MainActivity
+import co.carlosandresjimenez.android.bakingappkotlin.ui.recipelist.RecipeListAdapter
+import co.carlosandresjimenez.android.bakingappkotlin.util.Utility
 
-class MainActivity : AppCompatActivity(), ApiCallback, RecipeListAdapter.OnItemClickListener {
+/**
+ * Created by carlosjimenez on 1/6/18.
+ */
+class IngredientsConfigurationActivity : AppCompatActivity(), ApiCallback, RecipeListAdapter.OnItemClickListener {
 
-    val LOG_TAG = MainActivity::class.simpleName
+    val LOG_TAG = IngredientsConfigurationActivity::class.simpleName
 
     companion object {
         val RECIPE_LIST: String = "RECIPE_LIST"
     }
+
+    private var appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
 
     private var recyclerView: RecyclerView? = null
     private var progressBar: ProgressBar? = null
@@ -34,8 +39,22 @@ class MainActivity : AppCompatActivity(), ApiCallback, RecipeListAdapter.OnItemC
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+
+        // Set the result to CANCELED.  This will cause the widget host to cancel
+        // out of the widget placement if they press the back button.
+        setResult(RESULT_CANCELED)
+
+        // Set the view layout resource to use.
+        setContentView(R.layout.widget_configure)
+
+        // Find the widget id from the intent.
+        appWidgetId = intent.extras.getInt(
+                AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
+
+        // If they gave us an intent without the widget id, just bail.
+        if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+            finish()
+        }
 
         progressBar = findViewById(R.id.progress_bar)
 
@@ -47,7 +66,7 @@ class MainActivity : AppCompatActivity(), ApiCallback, RecipeListAdapter.OnItemC
             progressBar?.visibility = View.VISIBLE
             request.getRecipes(this)
         } else {
-            adapter.recipes = savedInstanceState.getParcelableArrayList(RECIPE_LIST)
+            adapter.recipes = savedInstanceState.getParcelableArrayList(MainActivity.RECIPE_LIST)
             adapter.notifyDataSetChanged()
         }
     }
@@ -56,22 +75,6 @@ class MainActivity : AppCompatActivity(), ApiCallback, RecipeListAdapter.OnItemC
         outState?.putParcelableArrayList(RECIPE_LIST, ArrayList(adapter.recipes))
 
         super.onSaveInstanceState(outState)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 
     override fun onRequestSuccess(recipes: List<BakingRecipe>?) {
@@ -93,8 +96,16 @@ class MainActivity : AppCompatActivity(), ApiCallback, RecipeListAdapter.OnItemC
     }
 
     override fun onItemClick(holder: RecipeListAdapter.ViewHolder) {
-        val intent = Intent(this, DetailActivity::class.java )
-        intent.putExtra(DetailActivity.RECIPE_EXTRA, holder.recipe)
-        startActivity(intent)
+        Utility.saveRecipePreference(this, holder.recipe)
+
+        // Push widget update to surface with newly set prefix
+        val appWidgetManager = AppWidgetManager.getInstance(this)
+        IngredientWidgetProvider.updateAppWidget(this, appWidgetManager, appWidgetId)
+
+        // Make sure we pass back the original appWidgetId
+        val resultValue = Intent()
+        resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+        setResult(RESULT_OK, resultValue)
+        finish()
     }
 }

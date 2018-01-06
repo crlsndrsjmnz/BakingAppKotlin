@@ -32,6 +32,8 @@ class StepDetailFragment : Fragment() {
 
     companion object {
         private val STEP_DETAIL_PARAMS = "STEP_DETAIL_PARAMS"
+        private val STEP_DETAIL_POSITION = "STEP_DETAIL_POSITION"
+        private val STEP_DETAIL_AUTOPLAY = "STEP_DETAIL_AUTOPLAY"
 
         fun newInstance(step: BakingStep): StepDetailFragment {
             val args = Bundle()
@@ -41,9 +43,6 @@ class StepDetailFragment : Fragment() {
             return fragment
         }
     }
-
-    private val STEP_DETAIL_POSITION = "STEP_DETAIL_POSITION"
-    private val STEP_DETAIL_AUTOPLAY = "STEP_DETAIL_AUTOPLAY"
 
     private lateinit var rootView: View
     private var exoPlayer: SimpleExoPlayer? = null
@@ -110,7 +109,7 @@ class StepDetailFragment : Fragment() {
         }
     }
 
-    fun initializeMedia() {
+    private fun initializeMedia() {
         when {
             bakingStep.videoURL.endsWith("mp4", true) -> initializePlayer(bakingStep.videoURL)
             bakingStep.thumbnailURL.endsWith("jpg", true) -> displayPhoto(bakingStep.thumbnailURL)
@@ -118,7 +117,7 @@ class StepDetailFragment : Fragment() {
         }
     }
 
-    fun displayPhoto(mediaUri: String = "") {
+    private fun displayPhoto(mediaUri: String = "") {
         playerView?.visibility = View.GONE
 
         if(!mediaUri.isEmpty()) {
@@ -133,7 +132,7 @@ class StepDetailFragment : Fragment() {
         }
     }
 
-    fun initializePlayer(mediaUri: String) {
+    private fun initializePlayer(mediaUri: String) {
         imageView?.visibility = View.GONE
 
         if (showImmersive) {
@@ -141,19 +140,19 @@ class StepDetailFragment : Fragment() {
         }
 
         // Create a default TrackSelector
-        var bandwidthMeter = DefaultBandwidthMeter()
-        var videoTrackSelectionFactory = AdaptiveTrackSelection.Factory(bandwidthMeter)
-        var trackSelector = DefaultTrackSelector(videoTrackSelectionFactory)
+        val bandwidthMeter = DefaultBandwidthMeter()
+        val videoTrackSelectionFactory = AdaptiveTrackSelection.Factory(bandwidthMeter)
+        val trackSelector = DefaultTrackSelector(videoTrackSelectionFactory)
 
         // Create the player
         exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector)
         playerView?.player = exoPlayer
 
         // Produces DataSource instances through which media data is loaded.
-        var dataSourceFactory = DefaultDataSourceFactory(context,
+        val dataSourceFactory = DefaultDataSourceFactory(context,
                 Util.getUserAgent(context, getString(R.string.app_name)), bandwidthMeter)
         // This is the MediaSource representing the media to be played.
-        var videoSource = ExtractorMediaSource.Factory(dataSourceFactory)
+        val videoSource = ExtractorMediaSource.Factory(dataSourceFactory)
                 .createMediaSource(Uri.parse(mediaUri))
 
         // Prepare the player with the source.
@@ -187,7 +186,7 @@ class StepDetailFragment : Fragment() {
         (activity as DetailActivity).showToolbar()
     }
 
-    fun releasePlayer() {
+    private fun releasePlayer() {
         if (exoPlayer != null) {
             exoPlayer?.stop()
             exoPlayer?.release()
